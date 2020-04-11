@@ -123,6 +123,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "angular-cdk-lessons"
+    }
+  },
+  "defaultProject": "angular-cdk-lessons",
+  "cli": {
+    "analytics": false
+  }
 }
