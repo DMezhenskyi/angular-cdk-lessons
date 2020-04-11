@@ -1,0 +1,9 @@
+$input-width: 35rem;
+
+:host {
+  display: block;
+}
+
+.drop-down-input {
+  width: $input-width;
+}
