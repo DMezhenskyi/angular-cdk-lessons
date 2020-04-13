@@ -1,6 +1,49 @@
-<mat-form-field appearance="fill" class="drop-down-input">
+<mat-form-field
+  appearance="fill"
+  class="drop-down-input"
+  [class.drop-down-input-active]="showPanel$ | async"
+  cdkOverlayOrigin
+  #originOverlay="cdkOverlayOrigin"
+>
   <mat-icon matPrefix>search</mat-icon>
   <mat-label>Search</mat-label>
-  <input matInput name="dropdown-search" placeholder="Start to type..." />
+  <input
+    matInput
+    [formControl]="stateCtrl"
+    name="dropdown-search"
+    placeholder="Start to type..."
+  />
   <mat-icon matSuffix>arrow_drop_down</mat-icon>
 </mat-form-field>
+<ng-template
+  cdkConnectedOverlay
+  cdkConnectedOverlayHasBackdrop
+  [cdkConnectedOverlayOffsetY]="-21"
+  [cdkConnectedOverlayOrigin]="originOverlay"
+  [cdkConnectedOverlayOpen]="showPanel$ | async"
+>
+  <section class="drop-down-serch-panel mat-elevation-z1">
+    <div class="drop-down-serch-panel_controls">
+      <mat-slide-toggle
+        [checked]="isCaseSensitive"
+        (change)="setCaseSensitive($event)"
+        class="mat-caption"
+        >Case sensitive</mat-slide-toggle
+      >
+      <mat-slide-toggle
+        (change)="stateCtrl.disabled ? stateCtrl.enable() : stateCtrl.disable()"
+        class="mat-caption"
+        style="margin-left: 1rem;"
+        >Disable search</mat-slide-toggle
+      >
+    </div>
+    <mat-divider></mat-divider>
+    <div class="panel-result-section">
+      <div class="result-item" *ngFor="let state of filteredStates$ | async">
+        <img class="example-option-img" [src]="state.flag" height="25" />
+        <span>{{ state.name }}</span>
+        <small class="mat-caption">Population: {{ state.population }}</small>
+      </div>
+    </div>
+  </section>
+</ng-template>

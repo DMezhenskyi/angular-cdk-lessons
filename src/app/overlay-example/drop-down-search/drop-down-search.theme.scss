@@ -1,4 +1,20 @@
 @import "~@angular/material/theming";
 
 @mixin drop-down-search-theme($theme) {
+  $background: map-get($theme, background);
+
+  .drop-down-serch-panel {
+    background-color: mat-color($background, background);
+  }
+  .drop-down-input-active {
+    &.mat-form-field-appearance-fill .mat-form-field-flex {
+      background-color: mat-color($background, card);
+    }
+  }
+
+  .result-item {
+    &:hover {
+      background-color: mat-color($background, hover);
+    }
+  }
 }
