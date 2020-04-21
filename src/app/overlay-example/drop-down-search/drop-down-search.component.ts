@@ -5,13 +5,27 @@ import {
   ViewChild,
   ElementRef,
 } from '@angular/core';
-import { Observable, merge } from 'rxjs';
-import { map, filter, mapTo, startWith } from 'rxjs/operators';
+import { Observable, merge, iif, EMPTY } from 'rxjs';
+import {
+  map,
+  filter,
+  mapTo,
+  startWith,
+  switchMap,
+  delay,
+} from 'rxjs/operators';
 import { FocusMonitor } from '@angular/cdk/a11y';
 import { MatInput } from '@angular/material/input';
-import { CdkConnectedOverlay } from '@angular/cdk/overlay';
+import {
+  CdkConnectedOverlay,
+  ConnectedPosition,
+  ScrollStrategyOptions,
+  ScrollStrategy,
+} from '@angular/cdk/overlay';
 import { FormControl } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { ESCAPE } from '@angular/cdk/keycodes';
+import { OverlayReference } from '@angular/cdk/overlay/overlay-reference';
 
 export interface State {
   flag: string;
@@ -57,6 +71,24 @@ export class DropDownSearchComponent implements OnInit {
   stateCtrl = new FormControl();
   filteredStates$: Observable<State[]>;
   isCaseSensitive: boolean = false;
+  positions: ConnectedPosition[] = [
+    {
+      originX: 'center',
+      originY: 'bottom',
+      overlayX: 'center',
+      overlayY: 'top',
+      offsetY: -21,
+    },
+    {
+      originX: 'center',
+      originY: 'top',
+      overlayX: 'center',
+      overlayY: 'bottom',
+      panelClass: 'no-enogh-space-at-bottom',
+    },
+  ];
+
+  scrollStrategy: ScrollStrategy;
 
   @ViewChild(MatInput, { read: ElementRef, static: true })
   private inputEl: ElementRef;
@@ -66,17 +98,34 @@ export class DropDownSearchComponent implements OnInit {
 
   private isPanelVisible$: Observable<boolean>;
   private isPanelHidden$: Observable<boolean>;
+  private isOverlayDetached$: Observable<void>;
 
-  constructor(private focusMonitor: FocusMonitor) {}
+  constructor(
+    private focusMonitor: FocusMonitor,
+    private scrollStrategies: ScrollStrategyOptions
+  ) {}
 
   ngOnInit(): void {
-    this.isPanelHidden$ = this.connectedOverlay.backdropClick.pipe(
-      mapTo(false)
-    );
+    this.scrollStrategy = new ConfirmScrollStrategy(this.inputEl);
+
     this.isPanelVisible$ = this.focusMonitor.monitor(this.inputEl).pipe(
       filter((focused) => !!focused),
       mapTo(true)
     );
+    this.isOverlayDetached$ = this.isPanelVisible$.pipe(
+      delay(0),
+      switchMap(() =>
+        iif(
+          () => !!this.connectedOverlay.overlayRef,
+          this.connectedOverlay.overlayRef.detachments(),
+          EMPTY
+        )
+      )
+    );
+    this.isPanelHidden$ = merge(
+      this.isOverlayDetached$,
+      this.connectedOverlay.backdropClick
+    ).pipe(mapTo(false));
     this.showPanel$ = merge(this.isPanelHidden$, this.isPanelVisible$);
 
     this.filteredStates$ = this.stateCtrl.valueChanges.pipe(
@@ -100,4 +149,31 @@ export class DropDownSearchComponent implements OnInit {
   private caseCheck(value: string) {
     return this.isCaseSensitive ? value : value.toLowerCase();
   }
+}
+
+class ConfirmScrollStrategy implements ScrollStrategy {
+  _overlay: OverlayReference;
+
+  constructor(private inputRef: ElementRef) {}
+
+  attach(overlayRef: OverlayReference) {
+    this._overlay = overlayRef;
+  }
+
+  enable() {
+    document.addEventListener('scroll', this.scrollListener);
+  }
+
+  disable() {
+    document.removeEventListener('scroll', this.scrollListener);
+  }
+
+  private scrollListener = () => {
+    if (confirm('The overlay will be closed. Procced?')) {
+      this._overlay.detach();
+      this.inputRef.nativeElement.blur();
+      return;
+    }
+    this._overlay.updatePosition();
+  };
 }

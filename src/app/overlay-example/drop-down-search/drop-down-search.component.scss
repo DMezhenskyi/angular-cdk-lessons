@@ -11,7 +11,7 @@ $input-width: 35rem;
   z-index: 100000;
 }
 .drop-down-serch-panel {
-  width: $input-width;
+  width: $input-width + 10rem;
   min-height: 5rem;
   padding: 1rem;
   box-sizing: border-box;

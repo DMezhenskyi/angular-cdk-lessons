@@ -18,9 +18,10 @@
 <ng-template
   cdkConnectedOverlay
   cdkConnectedOverlayHasBackdrop
-  [cdkConnectedOverlayOffsetY]="-21"
+  [cdkConnectedOverlayScrollStrategy]="scrollStrategy"
   [cdkConnectedOverlayOrigin]="originOverlay"
   [cdkConnectedOverlayOpen]="showPanel$ | async"
+  [cdkConnectedOverlayPositions]="positions"
 >
   <section class="drop-down-serch-panel mat-elevation-z1">
     <div class="drop-down-serch-panel_controls">

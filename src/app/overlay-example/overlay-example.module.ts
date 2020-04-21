@@ -11,9 +11,10 @@ import { DropDownSearchComponent } from './drop-down-search/drop-down-search.com
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DialogComponent } from './dialog/dialog.component';
 
 @NgModule({
-  declarations: [DropDownSearchComponent],
+  declarations: [DropDownSearchComponent, DialogComponent],
   imports: [
     CommonModule,
     MatInputModule,
@@ -25,6 +26,6 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatDividerModule,
     ReactiveFormsModule,
   ],
-  exports: [DropDownSearchComponent],
+  exports: [DropDownSearchComponent, DialogComponent],
 })
 export class OverlayExampleModule {}
