@@ -12,6 +12,9 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DialogComponent } from './dialog/dialog.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [DropDownSearchComponent, DialogComponent],
@@ -25,6 +28,9 @@ import { DialogComponent } from './dialog/dialog.component';
     MatSlideToggleModule,
     MatDividerModule,
     ReactiveFormsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonModule,
   ],
   exports: [DropDownSearchComponent, DialogComponent],
 })
