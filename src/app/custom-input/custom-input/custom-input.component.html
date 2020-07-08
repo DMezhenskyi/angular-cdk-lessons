@@ -1,0 +1,21 @@
+<ng-container [formGroup]="form">
+  <mat-select
+    panelClass="test-panel"
+    disableOptionCentering
+    formControlName="scope"
+    class="select"
+  >
+    <mat-option [value]="''">All</mat-option>
+    <mat-option [value]="'at'">Austria</mat-option>
+    <mat-option [value]="'ua'">Ukraine</mat-option>
+  </mat-select>
+  <mat-divider class="divider" [vertical]="true"></mat-divider>
+  <input
+    matInput
+    formControlName="query"
+    (blur)="focused = false"
+    name="someh"
+    [placeholder]="placeholder"
+    class="input"
+  />
+</ng-container>

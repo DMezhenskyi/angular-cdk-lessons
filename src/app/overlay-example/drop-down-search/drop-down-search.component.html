@@ -5,14 +5,9 @@
   cdkOverlayOrigin
   #originOverlay="cdkOverlayOrigin"
 >
-  <mat-icon matPrefix>search</mat-icon>
   <mat-label>Search</mat-label>
-  <input
-    matInput
-    [formControl]="stateCtrl"
-    name="dropdown-search"
-    placeholder="Start to type..."
-  />
+  <mat-icon matPrefix style="margin-right: 0.5rem;">search</mat-icon>
+  <app-custom-input [formControl]="stateCtrl"></app-custom-input>
   <mat-icon matSuffix>arrow_drop_down</mat-icon>
 </mat-form-field>
 <ng-template
@@ -48,3 +43,4 @@
     </div>
   </section>
 </ng-template>
+<div myCdkOverlayContainer></div>

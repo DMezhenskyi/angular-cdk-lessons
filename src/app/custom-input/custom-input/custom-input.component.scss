@@ -1,0 +1,29 @@
+:host {
+  display: flex;
+  align-items: center;
+}
+.input {
+  display: inline-block;
+  width: 100%;
+  margin-left: 1rem;
+}
+.select {
+  width: 140px;
+}
+.divider {
+  margin-left: 1rem;
+  opacity: 0.56;
+}
+:host ::ng-deep .mat-divider {
+  border-right-color: currentColor;
+  height: 1em;
+}
+
+input::placeholder {
+  color: currentColor;
+  opacity: 0.56;
+}
+
+:host ::ng-deep .mat-select-arrow-wrapper {
+  transform: translateY(0) !important;
+}

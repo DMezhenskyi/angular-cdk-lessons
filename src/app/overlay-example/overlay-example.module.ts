@@ -1,3 +1,4 @@
+import { CustomInputModule } from './../custom-input/custom-input.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -11,10 +12,10 @@ import { DropDownSearchComponent } from './drop-down-search/drop-down-search.com
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { ReactiveFormsModule } from '@angular/forms';
-import { DialogComponent } from './dialog/dialog.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
+import { DialogComponent } from './dialog/dialog.component';
 
 @NgModule({
   declarations: [DropDownSearchComponent, DialogComponent],
@@ -31,6 +32,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatDatepickerModule,
     MatNativeDateModule,
     MatButtonModule,
+    CustomInputModule,
   ],
   exports: [DropDownSearchComponent, DialogComponent],
 })

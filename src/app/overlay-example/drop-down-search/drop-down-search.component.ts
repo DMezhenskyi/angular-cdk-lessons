@@ -1,3 +1,4 @@
+import { CustomInputComponent } from './../../custom-input/custom-input/custom-input.component';
 import {
   Component,
   OnInit,
@@ -13,25 +14,27 @@ import {
   startWith,
   switchMap,
   delay,
+  pluck,
 } from 'rxjs/operators';
 import { FocusMonitor } from '@angular/cdk/a11y';
-import { MatInput } from '@angular/material/input';
 import {
   CdkConnectedOverlay,
   ConnectedPosition,
-  ScrollStrategyOptions,
   ScrollStrategy,
+  OverlayContainer,
 } from '@angular/cdk/overlay';
 import { FormControl } from '@angular/forms';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
-import { ESCAPE } from '@angular/cdk/keycodes';
+
 import { OverlayReference } from '@angular/cdk/overlay/overlay-reference';
 
 export interface State {
   flag: string;
   name: string;
   population: string;
+  country: string;
 }
+
 @Component({
   selector: 'app-drop-down-search',
   templateUrl: './drop-down-search.component.html',
@@ -46,7 +49,8 @@ export class DropDownSearchComponent implements OnInit {
       name: 'Vienna',
       population: '1.897M',
       flag:
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Flag_of_Vienna.svg/800px-Flag_of_Vienna.svg.png',
+        '//upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Flag_of_Salzburg%2C_Vienna%2C_Vorarlberg.svg/100px-Flag_of_Salzburg%2C_Vienna%2C_Vorarlberg.svg.png',
+      country: 'at',
     },
     {
       name: 'Salzburg',
@@ -54,23 +58,26 @@ export class DropDownSearchComponent implements OnInit {
       // https://commons.wikimedia.org/wiki/File:Flag_of_California.svg
       flag:
         'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Flag_of_Salzburg_%28state%29.svg/1280px-Flag_of_Salzburg_%28state%29.svg.png',
+      country: 'at',
     },
     {
       name: 'Kiev',
       population: '2.884M',
       flag:
         'https://upload.wikimedia.org/wikipedia/commons/3/35/Flag_of_Kyiv_Kurovskyi.svg',
+      country: 'ua',
     },
     {
       name: 'Novopskov',
       population: '9,891K',
       flag:
         '//upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Flag_of_Novopskovskiy_Raion_in_Luhansk_Oblast.png/100px-Flag_of_Novopskovskiy_Raion_in_Luhansk_Oblast.png',
+      country: 'ua',
     },
   ];
   stateCtrl = new FormControl();
   filteredStates$: Observable<State[]>;
-  isCaseSensitive: boolean = false;
+  isCaseSensitive = false;
   positions: ConnectedPosition[] = [
     {
       originX: 'center',
@@ -90,8 +97,8 @@ export class DropDownSearchComponent implements OnInit {
 
   scrollStrategy: ScrollStrategy;
 
-  @ViewChild(MatInput, { read: ElementRef, static: true })
-  private inputEl: ElementRef;
+  @ViewChild(CustomInputComponent, { static: true })
+  private inputEl: CustomInputComponent;
 
   @ViewChild(CdkConnectedOverlay, { static: true })
   private connectedOverlay: CdkConnectedOverlay;
@@ -100,15 +107,12 @@ export class DropDownSearchComponent implements OnInit {
   private isPanelHidden$: Observable<boolean>;
   private isOverlayDetached$: Observable<void>;
 
-  constructor(
-    private focusMonitor: FocusMonitor,
-    private scrollStrategies: ScrollStrategyOptions
-  ) {}
+  constructor(private focusMonitor: FocusMonitor) {}
 
   ngOnInit(): void {
-    this.scrollStrategy = new ConfirmScrollStrategy(this.inputEl);
+    this.scrollStrategy = new ConfirmScrollStrategy(this.inputEl.input);
 
-    this.isPanelVisible$ = this.focusMonitor.monitor(this.inputEl).pipe(
+    this.isPanelVisible$ = this.focusMonitor.monitor(this.inputEl.input).pipe(
       filter((focused) => !!focused),
       mapTo(true)
     );
@@ -130,7 +134,9 @@ export class DropDownSearchComponent implements OnInit {
 
     this.filteredStates$ = this.stateCtrl.valueChanges.pipe(
       startWith(''),
-      map((state) => (state ? this._filterStates(state) : this.states.slice()))
+      map((searchTerms) =>
+        searchTerms ? this._filterStates(searchTerms) : this.states.slice()
+      )
     );
   }
 
@@ -138,12 +144,12 @@ export class DropDownSearchComponent implements OnInit {
     this.isCaseSensitive = checked;
   }
 
-  private _filterStates(value: string): State[] {
-    const filterValue = this.caseCheck(value);
+  private _filterStates(value: any): State[] {
+    const filterValue = this.caseCheck(value.query);
 
-    return this.states.filter(
-      (state) => this.caseCheck(state.name).indexOf(filterValue) === 0
-    );
+    return this.states
+      .filter((state) => state.country === value.scope)
+      .filter((state) => this.caseCheck(state.name).indexOf(filterValue) === 0);
   }
 
   private caseCheck(value: string) {
