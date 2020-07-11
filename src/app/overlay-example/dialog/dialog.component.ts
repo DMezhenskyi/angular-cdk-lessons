@@ -21,7 +21,7 @@ import {
 export class DialogComponent implements OnInit, AfterViewInit {
   form: FormGroup;
   comparisonStart = new Date('2020-06-27');
-  comparisonEnd = new Date('2020-06-30');
+  comparisonEnd = new Date('2020-07-15');
   startAt = new Date('2020-07-3');
 
   @ViewChild(MatDateRangeInput) private rangeInput: MatDateRangeInput<Date>;

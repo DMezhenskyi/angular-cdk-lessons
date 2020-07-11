@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { LayoutModule } from '@angular/cdk/layout';
 
 import { OverlayExampleModule } from './overlay-example/overlay-example.module';
+import { ComplexFormControlModule } from './complex-form-control/complex-form-control.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -18,6 +19,7 @@ import { OverlayExampleModule } from './overlay-example/overlay-example.module';
     OverlayExampleModule,
     MatButtonModule,
     LayoutModule,
+    ComplexFormControlModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
