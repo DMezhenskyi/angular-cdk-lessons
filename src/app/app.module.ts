@@ -9,6 +9,7 @@ import { LayoutModule } from '@angular/cdk/layout';
 
 import { OverlayExampleModule } from './overlay-example/overlay-example.module';
 import { ComplexFormControlModule } from './complex-form-control/complex-form-control.module';
+import { PatternsExampleModule } from './patterns-example/patterns-example.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,6 +21,7 @@ import { ComplexFormControlModule } from './complex-form-control/complex-form-co
     MatButtonModule,
     LayoutModule,
     ComplexFormControlModule,
+    PatternsExampleModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

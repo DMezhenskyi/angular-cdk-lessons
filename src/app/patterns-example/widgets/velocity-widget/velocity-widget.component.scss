@@ -1,0 +1,22 @@
+:host {
+  display: block;
+  text-align: center;
+  position: relative;
+  min-width: 190px;
+}
+.widget-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: cadetblue;
+}
+.loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -10px;
+  margin-left: -10px;
+}
+.content-loading {
+  opacity: 0.2;
+}
