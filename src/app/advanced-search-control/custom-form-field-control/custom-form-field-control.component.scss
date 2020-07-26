@@ -1,0 +1,13 @@
+:host {
+  display: flex;
+  align-items: center;
+}
+.select {
+  max-width: 100px;
+  margin-left: 0.7rem;
+}
+.divider {
+  height: 1em;
+  color: currentColor;
+  margin: 0 0.75rem;
+}
