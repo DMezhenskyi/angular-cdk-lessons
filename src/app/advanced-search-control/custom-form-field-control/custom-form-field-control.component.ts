@@ -8,15 +8,52 @@ import {
   ViewChild,
   ElementRef,
   OnDestroy,
+  Optional,
+  Self,
+  DoCheck,
 } from '@angular/core';
 import { MatFormFieldControl } from '@angular/material/form-field';
-import { Observable, Subject } from 'rxjs';
-import { NgControl } from '@angular/forms';
+import { Subject } from 'rxjs';
+import {
+  NgControl,
+  ControlValueAccessor,
+  FormBuilder,
+  FormGroup,
+  FormControl,
+  FormGroupDirective,
+  NgForm,
+} from '@angular/forms';
+import {
+  ErrorStateMatcher,
+  CanUpdateErrorStateCtor,
+  mixinErrorState,
+  mixinDisabled,
+  CanDisableCtor,
+} from '@angular/material/core';
+import { take } from 'rxjs/operators';
 
 export interface FormFieldValue {
   query: string;
   scope: string;
 }
+
+export class CustomErrorMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl): boolean {
+    return control.dirty && control.invalid;
+  }
+}
+
+class SearchInputBase {
+  constructor(
+    public _parentFormGroup: FormGroupDirective,
+    public _parentForm: NgForm,
+    public _defaultErrorStateMatcher: ErrorStateMatcher,
+    public ngControl: NgControl
+  ) {}
+}
+
+const _SearchInputMixiBase: CanUpdateErrorStateCtor &
+  CanDisableCtor = mixinDisabled(mixinErrorState(SearchInputBase));
 
 @Component({
   selector: 'app-custom-form-field-control',
@@ -27,24 +64,30 @@ export interface FormFieldValue {
       provide: MatFormFieldControl,
       useExisting: CustomFormFieldControlComponent,
     },
+    {
+      provide: ErrorStateMatcher,
+      useClass: CustomErrorMatcher,
+    },
   ],
 })
-export class CustomFormFieldControlComponent
-  implements OnInit, OnDestroy, MatFormFieldControl<FormFieldValue> {
+export class CustomFormFieldControlComponent extends _SearchInputMixiBase
+  implements
+    OnInit,
+    OnDestroy,
+    MatFormFieldControl<FormFieldValue>,
+    ControlValueAccessor,
+    DoCheck {
   static nextId = 0;
   @ViewChild(MatInput, { read: ElementRef, static: true })
   input: ElementRef;
   @Input()
   set value(value: FormFieldValue) {
-    this._value = value;
+    this.form.patchValue(value);
     this.stateChanges.next();
   }
   get value() {
-    return this._value;
+    return this.form.value;
   }
-  private _value: FormFieldValue;
-
-  stateChanges = new Subject<void>();
 
   @HostBinding()
   id = `custom-form-field-id-${CustomFormFieldControlComponent.nextId++}`;
@@ -58,8 +101,6 @@ export class CustomFormFieldControlComponent
     return this._placeholder;
   }
   private _placeholder: string;
-
-  ngControl: NgControl = null;
 
   focused: boolean;
 
@@ -78,13 +119,47 @@ export class CustomFormFieldControlComponent
   @Input()
   disabled: boolean;
 
-  errorState = false;
-
   controlType = 'custom-form-field';
 
   @HostBinding('attr.aria-describedby') describedBy = '';
 
-  constructor(private focusMonitor: FocusMonitor) {}
+  onChange: (value: FormFieldValue) => void;
+  onToutch: () => void;
+
+  form: FormGroup;
+
+  constructor(
+    private focusMonitor: FocusMonitor,
+    @Optional() @Self() public ngControl: NgControl,
+    private fb: FormBuilder,
+    public _defaultErrorStateMatcher: ErrorStateMatcher,
+    @Optional() _parentForm: NgForm,
+    @Optional() _parentFormGroup: FormGroupDirective
+  ) {
+    super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
+    if (this.ngControl != null) {
+      this.ngControl.valueAccessor = this;
+    }
+    this.form = this.fb.group({
+      scope: new FormControl(''),
+      query: new FormControl(''),
+    });
+  }
+
+  writeValue(obj: FormFieldValue): void {
+    this.value = obj;
+  }
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+  registerOnTouched(fn: any): void {
+    this.onToutch = fn;
+  }
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+    this.form.disable();
+    this.stateChanges.next();
+  }
 
   setDescribedByIds(ids: string[]): void {
     this.describedBy = ids.join(' ');
@@ -98,6 +173,19 @@ export class CustomFormFieldControlComponent
       this.focused = !!focused;
       this.stateChanges.next();
     });
+    this.focusMonitor
+      .monitor(this.input)
+      .pipe(take(1))
+      .subscribe(() => {
+        this.onToutch();
+      });
+    this.form.valueChanges.subscribe((value) => this.onChange(value));
+  }
+
+  ngDoCheck() {
+    if (this.ngControl) {
+      this.updateErrorState();
+    }
   }
 
   ngOnDestroy() {

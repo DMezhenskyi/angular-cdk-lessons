@@ -1,3 +1,4 @@
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,6 +22,7 @@ import { SearchFormFieldContainerComponent } from './search-form-field-container
     MatIconModule,
     MatDividerModule,
     MatSelectModule,
+    ReactiveFormsModule,
   ],
   exports: [SearchFormFieldContainerComponent, CustomFormFieldControlComponent],
 })

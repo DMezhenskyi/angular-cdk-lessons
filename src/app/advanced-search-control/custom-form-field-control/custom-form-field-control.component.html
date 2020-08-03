@@ -1,15 +1,17 @@
-<mat-select [value]="value" class="select">
-  <mat-option value="">All</mat-option>
-  <mat-option value="at">Austria</mat-option>
-  <mat-option value="ua">Ukraine</mat-option>
-</mat-select>
-<mat-divider [vertical]="true" class="divider"></mat-divider>
-<input
-  [ngStyle]="{ opacity: disabled ? 0.5 : 1 }"
-  [disabled]="disabled"
-  matInput
-  [placeholder]="placeholder"
-  type="text"
-  name="advanced-search"
-  class="input"
-/>
+<ng-container [formGroup]="form">
+  <mat-select class="select" formControlName="scope">
+    <mat-option value="">All</mat-option>
+    <mat-option value="at">Austria</mat-option>
+    <mat-option value="ua">Ukraine</mat-option>
+  </mat-select>
+  <mat-divider [vertical]="true" class="divider"></mat-divider>
+  <input
+    formControlName="query"
+    [ngStyle]="{ opacity: disabled ? 0.5 : 1 }"
+    matInput
+    [placeholder]="placeholder"
+    type="text"
+    name="advanced-search"
+    class="input"
+  />
+</ng-container>
